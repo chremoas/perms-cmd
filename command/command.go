@@ -20,11 +20,14 @@ type command struct {
 
 var cmdName = "perms"
 var commandList = map[string]command{
-	"list":       {listPermissions, "List all permissions"},
-	"list_users": {listPermissionsUsers, "List users in a permission group"},
-	"add":        {addPermission, "Add Permission"},
-	"delete":     {deletePermission, "Delete Permissions"},
-	"notDefined": {notDefined, ""},
+	"list":            {listPermissions, "List all permissions"},
+	"list_users":      {listPermissionsUsers, "List users in a permission group"},
+	"add":             {addPermission, "Add Permission"},
+	"add_user":        {addPermissionUser, "Add users to permission group"},
+	"remove":          {removePermission, "Remove Permissions"},
+	"remove_user":     {removePermissionUser, "Remove user from permission group"},
+	"list_user_perms": {listUserPermissions, "List all the permissions a user has"},
+	"notDefined":      {notDefined, ""},
 }
 
 var clientFactory ClientFactory
@@ -103,9 +106,13 @@ func listPermissionsUsers(ctx context.Context, req *proto.ExecRequest) string {
 	if err != nil {
 		buffer.WriteString(fmt.Sprintf("Error: %s\n", err))
 	} else {
-		buffer.WriteString("Permission Users:\n")
-		for user := range users.UserList {
-			buffer.WriteString(fmt.Sprintf("\t%d\n", users.UserList[user]))
+		if len(users.UserList) == 0 {
+			buffer.WriteString("No users in group\n")
+		} else {
+			buffer.WriteString("Permission Users:\n")
+			for user := range users.UserList {
+				buffer.WriteString(fmt.Sprintf("\t%s\n", users.UserList[user]))
+			}
 		}
 	}
 
@@ -114,7 +121,7 @@ func listPermissionsUsers(ctx context.Context, req *proto.ExecRequest) string {
 
 func addPermission(ctx context.Context, req *proto.ExecRequest) string {
 	var buffer bytes.Buffer
-	if len(req.Args) < 5 {
+	if len(req.Args) < 4 {
 		return "```Usage: !perms add <permission_group> <group_description>\n```"
 	}
 
@@ -139,13 +146,36 @@ func addPermission(ctx context.Context, req *proto.ExecRequest) string {
 	return fmt.Sprintf("```%s```", buffer.String())
 }
 
-func deletePermission(ctx context.Context, req *proto.ExecRequest) string {
+func addPermissionUser(ctx context.Context, req *proto.ExecRequest) string {
+	var buffer bytes.Buffer
+	if len(req.Args) < 4 {
+		return "```Usage: !perms add_user <user> <permission_group>\n```"
+	}
+
+	tmp := req.Args[2]
+	user := tmp[2 : len(tmp)-1]
+	permission := req.Args[3]
+
+	permsClient := clientFactory.NewPermsClient()
+	_, err := permsClient.AddPermissionUser(ctx,
+		&permsrv.PermissionUser{User: user, Permission: permission})
+	if err != nil {
+		buffer.WriteString(fmt.Sprintf("Error: %s\n", err))
+	} else {
+		buffer.WriteString(fmt.Sprintf("Added '%s' to '%s'\n", user, permission))
+	}
+
+	return fmt.Sprintf("```%s```", buffer.String())
+}
+
+func removePermission(ctx context.Context, req *proto.ExecRequest) string {
 	var buffer bytes.Buffer
 	if len(req.Args) != 3 {
-		return "```Usage: !perms delete <permission_group>\n```"
+		return "```Usage: !perms remove <permission_group>\n```"
 	}
 
 	permsClient := clientFactory.NewPermsClient()
+
 	_, err := permsClient.RemovePermission(ctx, &permsrv.Permission{Name: req.Args[2]})
 	if err != nil {
 		buffer.WriteString(fmt.Sprintf("Error: %s\n", err))
@@ -156,8 +186,48 @@ func deletePermission(ctx context.Context, req *proto.ExecRequest) string {
 	return fmt.Sprintf("```%s```", buffer.String())
 }
 
+func removePermissionUser(ctx context.Context, req *proto.ExecRequest) string {
+	var buffer bytes.Buffer
+	if len(req.Args) < 4 {
+		return "```Usage: !perms remove_user <user> <permission_group>\n```"
+	}
+
+	tmp := req.Args[2]
+	user := tmp[2 : len(tmp)-1]
+	permission := req.Args[3]
+
+	permsClient := clientFactory.NewPermsClient()
+	_, err := permsClient.RemovePermissionUser(ctx,
+		&permsrv.PermissionUser{User: user, Permission: permission})
+	if err != nil {
+		buffer.WriteString(fmt.Sprintf("Error: %s\n", err))
+	} else {
+		buffer.WriteString(fmt.Sprintf("Removed '%s' from '%s'\n", user, permission))
+	}
+
+	return fmt.Sprintf("```%s```", buffer.String())
+}
+
+func listUserPermissions(ctx context.Context, req *proto.ExecRequest) string {
+	var buffer bytes.Buffer
+	permsClient := clientFactory.NewPermsClient()
+	permissions, err := permsClient.ListUserPermissions(ctx,
+		&permsrv.PermissionUser{User: req.Args[2]})
+
+	if err != nil {
+		buffer.WriteString(fmt.Sprintf("Error: %s\n", err))
+	} else {
+		buffer.WriteString("Permission Groups:\n")
+		for perm := range permissions.PermissionsList {
+			buffer.WriteString(fmt.Sprintf("\t%s: %s\n", permissions.PermissionsList[perm].Name, permissions.PermissionsList[perm].Description))
+		}
+	}
+
+	return fmt.Sprintf("```%s```", buffer.String())
+}
+
 func notDefined(ctx context.Context, req *proto.ExecRequest) string {
-	return "This command hasn't been defined yet"
+	return "Command not implemented"
 }
 
 func NewCommand(name string, factory ClientFactory) *Command {
