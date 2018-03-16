@@ -231,7 +231,6 @@ func removePermissionUser(ctx context.Context, req *proto.ExecRequest) string {
 	}
 
 	return sendSuccess(fmt.Sprintf("Removed '%s' from '%s'\n", user, permission))
-
 }
 
 func listUserPermissions(ctx context.Context, req *proto.ExecRequest) string {
