@@ -15,12 +15,8 @@ type ClientFactory interface {
 	NewPermsClient() permsrv.PermissionsClient
 }
 
-type command struct {
-	funcptr func(ctx context.Context, request *proto.ExecRequest) string
-	help    string
-}
-
 var cmdName = "perms"
+var perms *common.Permissions
 var clientFactory ClientFactory
 
 type Command struct {
@@ -59,7 +55,7 @@ func listPermissions(ctx context.Context, req *proto.ExecRequest) string {
 	permissions, err := permsClient.ListPermissions(ctx, &permsrv.NilRequest{})
 
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
 	buffer.WriteString("Permission Groups:\n")
@@ -73,18 +69,18 @@ func listPermissions(ctx context.Context, req *proto.ExecRequest) string {
 func listPermissionsUsers(ctx context.Context, req *proto.ExecRequest) string {
 	var buffer bytes.Buffer
 	if len(req.Args) != 3 {
-		return sendError("Usage: !perms list_users <permission_group>")
+		return common.SendError("Usage: !perms list_users <permission_group>")
 	}
 
 	permsClient := clientFactory.NewPermsClient()
 	users, err := permsClient.ListPermissionUsers(ctx, &permsrv.UsersRequest{Permission: req.Args[2]})
 
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
 	if len(users.UserList) == 0 {
-		return sendError("No users in group")
+		return common.SendError("No users in group")
 	}
 
 	buffer.WriteString("Permission Users:\n")
@@ -97,11 +93,19 @@ func listPermissionsUsers(ctx context.Context, req *proto.ExecRequest) string {
 
 func addPermission(ctx context.Context, req *proto.ExecRequest) string {
 	if len(req.Args) < 4 {
-		return sendError("Usage: !perms add <permission_group> <group_description>")
+		return common.SendError("Usage: !perms create <permission_group> <group_description>")
 	}
 
 	name := req.Args[2]
 	description := strings.Join(req.Args[3:], " ")
+
+	if common.IsDiscordUser(name) {
+		return common.SendError("Discord users may not be permissions")
+	}
+
+	if common.IsDiscordUser(description) {
+		return common.SendError("Discord users may not be descriptions")
+	}
 
 	if len(description) > 0 && description[0] == '"' {
 		description = description[1:]
@@ -111,88 +115,88 @@ func addPermission(ctx context.Context, req *proto.ExecRequest) string {
 		description = description[:len(description)-1]
 	}
 
-	canPerform, err := canPerform(ctx, req, []string{"perm_admins"})
+	canPerform, err := perms.CanPerform(ctx, req.Sender)
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
 	if !canPerform {
-		return sendError("User doesn't have permission to this command")
+		return common.SendError("User doesn't have permission to this command")
 	}
 
 	permsClient := clientFactory.NewPermsClient()
 	_, err = permsClient.AddPermission(ctx, &permsrv.Permission{Name: name, Description: description})
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
-	return sendSuccess(fmt.Sprintf("Added: %s\n", name))
+	return common.SendSuccess(fmt.Sprintf("Added: %s\n", name))
 }
 
 func addPermissionUser(ctx context.Context, req *proto.ExecRequest) string {
 	if len(req.Args) < 4 {
-		return sendError("Usage: !perms add_user <user> <permission_group>")
+		return common.SendError("Usage: !perms add <user> <permission_group>")
 	}
 
 	tmp := req.Args[2]
 	user := tmp[2 : len(tmp)-1]
 	permission := req.Args[3]
 
-	canPerform, err := canPerform(ctx, req, []string{"perm_admins"})
+	canPerform, err := perms.CanPerform(ctx, req.Sender)
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
 	if !canPerform {
-		return sendError("User doesn't have permission to this command")
+		return common.SendError("User doesn't have permission to this command")
 	}
 
 	permsClient := clientFactory.NewPermsClient()
 	_, err = permsClient.AddPermissionUser(ctx,
 		&permsrv.PermissionUser{User: user, Permission: permission})
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
-	return sendSuccess(fmt.Sprintf("Added '%s' to '%s'\n", user, permission))
+	return common.SendSuccess(fmt.Sprintf("Added '%s' to '%s'\n", user, permission))
 }
 
 func removePermission(ctx context.Context, req *proto.ExecRequest) string {
 	if len(req.Args) != 3 {
-		return sendError("Usage: !perms remove <permission_group>")
+		return common.SendError("Usage: !perms destroy <permission_group>")
 	}
 
-	canPerform, err := canPerform(ctx, req, []string{"perm_admins"})
+	canPerform, err := perms.CanPerform(ctx, req.Sender)
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
 	if !canPerform {
-		return sendError("User doesn't have permission to this command")
+		return common.SendError("User doesn't have permission to this command")
 	}
 
 	permsClient := clientFactory.NewPermsClient()
 
 	_, err = permsClient.RemovePermission(ctx, &permsrv.Permission{Name: req.Args[2]})
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
-	return sendSuccess(fmt.Sprintf("Removed: %s\n", req.Args[2]))
+	return common.SendSuccess(fmt.Sprintf("Removed: %s\n", req.Args[2]))
 }
 
 func removePermissionUser(ctx context.Context, req *proto.ExecRequest) string {
 	if len(req.Args) < 4 {
-		return sendError("Usage: !perms remove_user <user> <permission_group>")
+		return common.SendError("Usage: !perms remove <user> <permission_group>")
 	}
 
-	canPerform, err := canPerform(ctx, req, []string{"perm_admins"})
+	canPerform, err := perms.CanPerform(ctx, req.Sender)
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
 	if !canPerform {
-		return sendError("User doesn't have permission to this command")
+		return common.SendError("User doesn't have permission to this command")
 	}
 
 	tmp := req.Args[2]
@@ -203,10 +207,10 @@ func removePermissionUser(ctx context.Context, req *proto.ExecRequest) string {
 	_, err = permsClient.RemovePermissionUser(ctx,
 		&permsrv.PermissionUser{User: user, Permission: permission})
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
-	return sendSuccess(fmt.Sprintf("Removed '%s' from '%s'\n", user, permission))
+	return common.SendSuccess(fmt.Sprintf("Removed '%s' from '%s'\n", user, permission))
 }
 
 func listUserPermissions(ctx context.Context, req *proto.ExecRequest) string {
@@ -216,7 +220,7 @@ func listUserPermissions(ctx context.Context, req *proto.ExecRequest) string {
 		&permsrv.PermissionUser{User: req.Args[2]})
 
 	if err != nil {
-		return sendFatal(err.Error())
+		return common.SendFatal(err.Error())
 	}
 
 	buffer.WriteString("Permission Groups:\n")
@@ -229,31 +233,6 @@ func listUserPermissions(ctx context.Context, req *proto.ExecRequest) string {
 
 func NewCommand(name string, factory ClientFactory) *Command {
 	clientFactory = factory
-	newCommand := Command{name: name, factory: factory}
-	return &newCommand
-}
-
-func canPerform(ctx context.Context, req *proto.ExecRequest, perms []string) (bool, error) {
-	permsClient := clientFactory.NewPermsClient()
-
-	sender := strings.Split(req.Sender, ":")
-	canPerform, err := permsClient.Perform(ctx,
-		&permsrv.PermissionsRequest{User: sender[1], PermissionsList: perms})
-
-	if err != nil {
-		return false, err
-	}
-	return canPerform.CanPerform, nil
-}
-
-func sendSuccess(message string) string {
-	return fmt.Sprintf(":white_check_mark: %s", message)
-}
-
-func sendError(message string) string {
-	return fmt.Sprintf(":warning: %s", message)
-}
-
-func sendFatal(message string) string {
-	return fmt.Sprintf(":octagonal_sign: %s", message)
+	perms = &common.Permissions{Client: clientFactory.NewPermsClient(), PermissionsList: []string{"perms_admins"}}
+	return &Command{name: name, factory: factory}
 }
