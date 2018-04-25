@@ -214,6 +214,10 @@ func removePermissionUser(ctx context.Context, req *proto.ExecRequest) string {
 }
 
 func listUserPermissions(ctx context.Context, req *proto.ExecRequest) string {
+	if len(req.Args) < 3 {
+		return common.SendError("Usage: !perms list_user_perms <user>")
+	}
+
 	var buffer bytes.Buffer
 	permsClient := clientFactory.NewPermsClient()
 	permissions, err := permsClient.ListUserPermissions(ctx,
