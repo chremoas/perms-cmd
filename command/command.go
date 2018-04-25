@@ -5,6 +5,8 @@ import (
 	"fmt"
 	proto "github.com/chremoas/chremoas/proto"
 	permsrv "github.com/chremoas/perms-srv/proto"
+	"github.com/chremoas/services-common/args"
+	common "github.com/chremoas/services-common/command"
 	"golang.org/x/net/context"
 	"strings"
 )
@@ -19,17 +21,6 @@ type command struct {
 }
 
 var cmdName = "perms"
-var commandList = map[string]command{
-	"list":            {listPermissions, "List all permissions"},
-	"list_users":      {listPermissionsUsers, "List users in a permission group"},
-	"add":             {addPermission, "Add Permission"},
-	"add_user":        {addPermissionUser, "Add users to permission group"},
-	"remove":          {removePermission, "Remove Permissions"},
-	"remove_user":     {removePermissionUser, "Remove user from permission group"},
-	"list_user_perms": {listUserPermissions, "List all the permissions a user has"},
-	"notDefined":      {notDefined, ""},
-}
-
 var clientFactory ClientFactory
 
 type Command struct {
@@ -45,36 +36,21 @@ func (c *Command) Help(ctx context.Context, req *proto.HelpRequest, rsp *proto.H
 }
 
 func (c *Command) Exec(ctx context.Context, req *proto.ExecRequest, rsp *proto.ExecResponse) error {
-	var response string
+	cmd := args.NewArg(cmdName)
+	cmd.Add("list", &args.Command{listPermissions, "List all Permissions"})
+	cmd.Add("create", &args.Command{addPermission, "Add Permission"})
+	cmd.Add("destroy", &args.Command{removePermission, "Delete Permission"})
+	cmd.Add("add", &args.Command{addPermissionUser, "Add user to permission group"})
+	cmd.Add("remove", &args.Command{removePermissionUser, "Remove user from permission group"})
+	cmd.Add("list_users", &args.Command{listPermissionsUsers, "List users in a permission group"})
+	cmd.Add("list_user_perms", &args.Command{listUserPermissions, "List all the permissions a user has"})
+	err := cmd.Exec(ctx, req, rsp)
 
-	if req.Args[1] == "help" {
-		response = help(ctx, req)
-	} else {
-		f, ok := commandList[req.Args[1]]
-		if ok {
-			response = f.funcptr(ctx, req)
-		} else {
-			response = sendError(fmt.Sprintf("Not a valid subcommand: %s", req.Args[1]))
-		}
+	// I don't 100% love this, but it'll do for now. -brian
+	if err != nil {
+		rsp.Result = []byte(common.SendError(err.Error()))
 	}
-
-	rsp.Result = []byte(response)
 	return nil
-}
-
-func help(ctx context.Context, req *proto.ExecRequest) string {
-	var buffer bytes.Buffer
-
-	buffer.WriteString(fmt.Sprintf("Usage: !%s <subcommand> <arguments>\n", cmdName))
-	buffer.WriteString("\nSubcommands:\n")
-
-	for cmd := range commandList {
-		if commandList[cmd].help != "" {
-			buffer.WriteString(fmt.Sprintf("\t%s: %s\n", cmd, commandList[cmd].help))
-		}
-	}
-
-	return fmt.Sprintf("```%s```", buffer.String())
 }
 
 func listPermissions(ctx context.Context, req *proto.ExecRequest) string {
@@ -249,10 +225,6 @@ func listUserPermissions(ctx context.Context, req *proto.ExecRequest) string {
 	}
 
 	return fmt.Sprintf("```%s```", buffer.String())
-}
-
-func notDefined(ctx context.Context, req *proto.ExecRequest) string {
-	return sendError("Command not implemented")
 }
 
 func NewCommand(name string, factory ClientFactory) *Command {
