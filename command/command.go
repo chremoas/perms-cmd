@@ -12,7 +12,7 @@ import (
 )
 
 type ClientFactory interface {
-	NewPermsClient() permsrv.PermissionsClient
+	NewPermsClient() permsrv.PermissionsService
 }
 
 var cmdName = "perms"
