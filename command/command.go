@@ -286,7 +286,7 @@ func listUserPermissions(ctx context.Context, req *proto.ExecRequest) string {
 
 func NewCommand(name string, factory ClientFactory) *Command {
 	clientFactory = factory
-	perms = &common.Permissions{Client: clientFactory.NewPermsClient(), PermissionsList: []string{"perms_admins"}}
-	serverPerms = &common.Permissions{Client: clientFactory.NewPermsClient(), PermissionsList: []string{"server_admins"}}
+	perms = common.NewPermission(clientFactory.NewPermsClient(), []string{"perms_admins"})
+	serverPerms = common.NewPermission(clientFactory.NewPermsClient(), []string{"server_admins"})
 	return &Command{name: name, factory: factory}
 }
