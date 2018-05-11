@@ -139,7 +139,7 @@ func addPermission(ctx context.Context, req *proto.ExecRequest) string {
 		return common.SendFatal(err.Error())
 	}
 
-	return common.SendSuccess(fmt.Sprintf("Added: %s\n", name))
+	return common.SendSuccess(fmt.Sprintf("Created: %s\n", name))
 }
 
 func addPermissionUser(ctx context.Context, req *proto.ExecRequest) string {
@@ -208,13 +208,7 @@ func removePermission(ctx context.Context, req *proto.ExecRequest) string {
 		return common.SendFatal(err.Error())
 	}
 
-	roleClient := clientFactory.NewRolesClient()
-	u, err := roleClient.GetDiscordUser(ctx, &rolesrv.GetDiscordUserRequest{UserId: common.ExtractUserId(req.Args[2])})
-	if err != nil {
-		return common.SendError(err.Error())
-	}
-
-	return common.SendSuccess(fmt.Sprintf("Removed: %s\n", u.Username))
+	return common.SendSuccess(fmt.Sprintf("Destroyed: %s\n", req.Args[2]))
 }
 
 func removePermissionUser(ctx context.Context, req *proto.ExecRequest) string {
