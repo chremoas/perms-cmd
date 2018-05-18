@@ -147,8 +147,7 @@ func addPermissionUser(ctx context.Context, req *proto.ExecRequest) string {
 		return common.SendError("Usage: !perms add <user> <permission_group>")
 	}
 
-	tmp := req.Args[2]
-	user := tmp[2 : len(tmp)-1]
+	user := common.ExtractUserId(req.Args[2])
 	permission := req.Args[3]
 
 	if permission == "perms_admins" {
@@ -216,8 +215,7 @@ func removePermissionUser(ctx context.Context, req *proto.ExecRequest) string {
 		return common.SendError("Usage: !perms remove <user> <permission_group>")
 	}
 
-	tmp := req.Args[2]
-	user := tmp[2 : len(tmp)-1]
+	user := common.ExtractUserId(req.Args[2])
 	permission := req.Args[3]
 
 	if permission == "perms_admins" {
