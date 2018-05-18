@@ -6,6 +6,7 @@ import (
 	proto "github.com/chremoas/chremoas/proto"
 	permsrv "github.com/chremoas/perms-srv/proto"
 	rolesrv "github.com/chremoas/role-srv/proto"
+	rclient "github.com/chremoas/role-srv/client"
 	"github.com/chremoas/services-common/args"
 	common "github.com/chremoas/services-common/command"
 	"golang.org/x/net/context"
@@ -21,6 +22,7 @@ var cmdName = "perms"
 var perms *common.Permissions
 var serverPerms *common.Permissions
 var clientFactory ClientFactory
+var role rclient.Roles
 
 type Command struct {
 	//Store anything you need the Help or Exec functions to have access to here
@@ -70,7 +72,6 @@ func listPermissions(ctx context.Context, req *proto.ExecRequest) string {
 }
 
 func listPermissionsUsers(ctx context.Context, req *proto.ExecRequest) string {
-	var buffer bytes.Buffer
 	if len(req.Args) != 3 {
 		return common.SendError("Usage: !perms list_users <permission_group>")
 	}
@@ -86,18 +87,12 @@ func listPermissionsUsers(ctx context.Context, req *proto.ExecRequest) string {
 		return common.SendError("No users in group")
 	}
 
-	roleClient := clientFactory.NewRolesClient()
-
-	buffer.WriteString("Permission Users:\n")
-	for user := range users.UserList {
-		u, err := roleClient.GetDiscordUser(ctx, &rolesrv.GetDiscordUserRequest{UserId: users.UserList[user]})
-		if err != nil {
-			return common.SendError(err.Error())
-		}
-		buffer.WriteString(fmt.Sprintf("\t%s\n", u.Username))
+	buffer, _, err := role.MapName(ctx, users.UserList)
+	if err != nil {
+		return common.SendError(err.Error())
 	}
 
-	return fmt.Sprintf("```%s```", buffer.String())
+	return fmt.Sprintf("```Permission Users:\n%s```", buffer.String())
 }
 
 func addPermission(ctx context.Context, req *proto.ExecRequest) string {
@@ -278,6 +273,9 @@ func listUserPermissions(ctx context.Context, req *proto.ExecRequest) string {
 
 func NewCommand(name string, factory ClientFactory) *Command {
 	clientFactory = factory
+	role = rclient.Roles{
+		RoleClient:  clientFactory.NewRolesClient(),
+	}
 	perms = common.NewPermission(clientFactory.NewPermsClient(), []string{"perms_admins"})
 	serverPerms = common.NewPermission(clientFactory.NewPermsClient(), []string{"server_admins"})
 	return &Command{name: name, factory: factory}
