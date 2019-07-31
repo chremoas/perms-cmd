@@ -2,3 +2,5 @@
 *.iml
 application.yaml
 auth-admin-bot
+
+vendor/
