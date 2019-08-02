@@ -5,9 +5,10 @@ import (
 	"fmt"
 	proto "github.com/chremoas/chremoas/proto"
 	permsrv "github.com/chremoas/perms-srv/proto"
+	pclient "github.com/chremoas/perms-srv/client"
 	rolesrv "github.com/chremoas/role-srv/proto"
 	rclient "github.com/chremoas/role-srv/client"
-	"github.com/chremoas/services-common/args"
+	"github.com/chremoas/chremoas/args"
 	common "github.com/chremoas/services-common/command"
 	"golang.org/x/net/context"
 	"strings"
@@ -19,8 +20,8 @@ type ClientFactory interface {
 }
 
 var cmdName = "perms"
-var perms *common.Permissions
-var serverPerms *common.Permissions
+var perms *pclient.Permissions
+var serverPerms *pclient.Permissions
 var clientFactory ClientFactory
 var role rclient.Roles
 
@@ -276,7 +277,7 @@ func NewCommand(name string, factory ClientFactory) *Command {
 	role = rclient.Roles{
 		RoleClient:  clientFactory.NewRolesClient(),
 	}
-	perms = common.NewPermission(clientFactory.NewPermsClient(), []string{"perms_admins"})
-	serverPerms = common.NewPermission(clientFactory.NewPermsClient(), []string{"server_admins"})
+	perms = pclient.NewPermission(clientFactory.NewPermsClient(), []string{"perms_admins"})
+	serverPerms = pclient.NewPermission(clientFactory.NewPermsClient(), []string{"server_admins"})
 	return &Command{name: name, factory: factory}
 }
