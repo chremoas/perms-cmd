@@ -15,7 +15,7 @@ github.com/chremoas/chremoas/proto
 # github.com/chremoas/perms-srv v1.2.5
 github.com/chremoas/perms-srv/client
 github.com/chremoas/perms-srv/proto
-# github.com/chremoas/role-srv v1.2.5
+# github.com/chremoas/role-srv v1.2.6
 github.com/chremoas/role-srv/client
 github.com/chremoas/role-srv/proto
 # github.com/chremoas/services-common v1.2.5
