@@ -10,15 +10,19 @@ github.com/armon/go-metrics
 # github.com/cheekybits/genny v1.0.0
 github.com/cheekybits/genny/generic
 # github.com/chremoas/chremoas v1.2.5
+## explicit
 github.com/chremoas/chremoas/args
 github.com/chremoas/chremoas/proto
 # github.com/chremoas/perms-srv v1.2.5
+## explicit
 github.com/chremoas/perms-srv/client
 github.com/chremoas/perms-srv/proto
 # github.com/chremoas/role-srv v1.2.5
+## explicit
 github.com/chremoas/role-srv/client
 github.com/chremoas/role-srv/proto
 # github.com/chremoas/services-common v1.2.5
+## explicit
 github.com/chremoas/services-common/command
 github.com/chremoas/services-common/config
 github.com/chremoas/services-common/sets
@@ -104,6 +108,7 @@ github.com/marten-seemann/qtls
 # github.com/micro/cli v0.2.0
 github.com/micro/cli
 # github.com/micro/go-micro v1.9.1
+## explicit
 github.com/micro/go-micro
 github.com/micro/go-micro/broker
 github.com/micro/go-micro/broker/http
@@ -234,6 +239,7 @@ golang.org/x/crypto/openpgp/packet
 golang.org/x/crypto/openpgp/s2k
 golang.org/x/crypto/poly1305
 # golang.org/x/net v0.0.0-20190724013045-ca1201d0de80
+## explicit
 golang.org/x/net/bpf
 golang.org/x/net/context
 golang.org/x/net/http/httpguts
@@ -298,3 +304,5 @@ google.golang.org/grpc/tap
 gopkg.in/alecthomas/kingpin.v2
 # gopkg.in/yaml.v2 v2.2.2
 gopkg.in/yaml.v2
+# github.com/chremoas/perms-cmd => ../perms-cmd
+# github.com/hashicorp/consul => github.com/hashicorp/consul v1.5.1
