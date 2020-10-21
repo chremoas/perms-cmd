@@ -21,7 +21,7 @@ github.com/chremoas/perms-srv/proto
 ## explicit
 github.com/chremoas/role-srv/client
 github.com/chremoas/role-srv/proto
-# github.com/chremoas/services-common v1.3.0
+# github.com/chremoas/services-common v1.3.1
 ## explicit
 github.com/chremoas/services-common/command
 github.com/chremoas/services-common/config
