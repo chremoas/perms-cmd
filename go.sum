@@ -66,9 +66,12 @@ github.com/chremoas/chremoas v1.2.0 h1:FF+/NW1k0mHZkFEtQRNN7sbYoKlP4/lcJ8c/Y9BTH
 github.com/chremoas/chremoas v1.2.0/go.mod h1:f7npA80TXu4DIbXl4Z0Vv9r5v/obp063AUQPdGdXPDU=
 github.com/chremoas/chremoas v1.2.5 h1:twKrK5OySQJPq19j+t2me+gkzf2INwu4hGiNdnA1Ngo=
 github.com/chremoas/chremoas v1.2.5/go.mod h1:V88NZnvCfowfFyAHPEtYglS63itO2r5IUWTbOGuizMM=
+github.com/chremoas/chremoas v1.3.0 h1:CPC03Sn/92za1c0VESM4Uj5x433oiQAmSuScGJ7ijDI=
+github.com/chremoas/chremoas v1.3.0/go.mod h1:WoJSZ38lNzUKH8h+Xxi6038t7pDTv3KnQncFF3IwqDw=
 github.com/chremoas/discord-gateway v1.1.8/go.mod h1:U1J/HfcNTMX4O3qDec8N7vFb0x76rGHFoP3wBg+/U+Q=
 github.com/chremoas/discord-gateway v1.2.0/go.mod h1:c/v/wPGOfK1gVMgh9qHWYRNZeL6xOOoVY6rTrgiYDdY=
 github.com/chremoas/discord-gateway v1.2.5/go.mod h1:OMxhGRQBc0s4gM4q/IrMo5A2Ra9aAGRvcKLP1yIOMes=
+github.com/chremoas/discord-gateway v1.3.0/go.mod h1:kb+aUYu0vmyTMaceiG6mmcRvvZym/QZOuOF/KL8IQw8=
 github.com/chremoas/perms-srv v1.1.6 h1:hPqBMI/wf3q8fnxo8ldaUdX3GXi80xOgJqlG0FLO4H8=
 github.com/chremoas/perms-srv v1.1.6/go.mod h1:CuA5puEEWkeuEjsFmu9SZ9LN/xfUWUGhQd7OUurWcIo=
 github.com/chremoas/perms-srv v1.1.7 h1:CKpCKTwdhZFP46ourz79mcucBAvSILZIFDzQBc7dK7U=
@@ -77,6 +80,8 @@ github.com/chremoas/perms-srv v1.2.0 h1:+VBp0LMNUoKn89lSe63hzdlSpuoT2NmLXvILAPoW
 github.com/chremoas/perms-srv v1.2.0/go.mod h1:H6RzD4PKSoUZovtEIgGFbvZj1ZcAC/vmCJ/Iuwdcmr8=
 github.com/chremoas/perms-srv v1.2.5 h1:16wL447cDQS9JY20gbyNa2H0N8masT2eytyaGYG1R6E=
 github.com/chremoas/perms-srv v1.2.5/go.mod h1:1DoHu/sFjsktn6m91VbQsoZTWMML/rvc4mjPtd7+NM8=
+github.com/chremoas/perms-srv v1.3.0 h1:xIzhoAfTLFQHgdZ+gXH7ZeT/XNQuwSYMExYljZtb9Lg=
+github.com/chremoas/perms-srv v1.3.0/go.mod h1:i5MAaSOkUDm4EXZMC1SeS6iuoZWJpMwdLw86O2gvtNk=
 github.com/chremoas/role-srv v1.1.15 h1:z/ApQozqQ7ahJZIMNvgyEcIn44+NNz4LjCdspe5N8y8=
 github.com/chremoas/role-srv v1.1.15/go.mod h1:5gKeGq3A67pu5Y6iSgzmIS5cP2qKJKcV0UjyVVrtYdY=
 github.com/chremoas/role-srv v1.1.16 h1:hrd49Zm1EweR/KlqmoL70S3wpnkCF/385LIk3DBVHbY=
@@ -85,6 +90,8 @@ github.com/chremoas/role-srv v1.2.1 h1:Wi41ek2CZhVvqbZ02yNXBDbJiE/ulJun90dnLHZLg
 github.com/chremoas/role-srv v1.2.1/go.mod h1:a8u66InMGq0P+JpFEYN3CJ4Om3FZ0EqqPe8JQv9OtJM=
 github.com/chremoas/role-srv v1.2.5 h1:9xuLmFO7SN/uCQ9WUhPsAtiLjtpu86UpOmiJx5g+Z6M=
 github.com/chremoas/role-srv v1.2.5/go.mod h1:bS7Tf8vQSYDh2YvlwKYD9QeGm4+OnhGxsTw5KxHVddY=
+github.com/chremoas/role-srv v1.3.0 h1:+AktIQ/0gTjKOhpyQCKI3Q6uDcJ5qSii8Gb3seKKRR0=
+github.com/chremoas/role-srv v1.3.0/go.mod h1:rrWHprG1mmPw3qtYCplRMqlxJTjr9rFWSfWktvpsw50=
 github.com/chremoas/services-common v1.1.5/go.mod h1:MP2fE7WGpNfPWFh5prKth122j9YjWM3AyTKvtZBRT1k=
 github.com/chremoas/services-common v1.1.7 h1:sq1E7YapFyyvbm9YgQlGufgGlzaqCQYrXAJ6YfIE9g8=
 github.com/chremoas/services-common v1.1.7/go.mod h1:HFraluwmGRASG65Vs196a5W6oBbDQsIQ2mbFyf/uPhA=
@@ -94,6 +101,8 @@ github.com/chremoas/services-common v1.2.0 h1:8yC+Hl1TcC1uOoZvyI/EgA5ifiSoLwiakn
 github.com/chremoas/services-common v1.2.0/go.mod h1:Erqmm1ecYwNm/jIyH6TpZTVKXYNdi0DIeF+51e425SI=
 github.com/chremoas/services-common v1.2.5 h1:43d+roMFdVzOv7KzUKV7B2z3hUNnGJhgT8Ps8canyV8=
 github.com/chremoas/services-common v1.2.5/go.mod h1:LQDKkCa7367dW2jcNfS3C4vHFP0UuxJ/krSXjx31kRo=
+github.com/chremoas/services-common v1.3.0 h1:+9Q0X5EBuDaycp1Jt/k1yhtIje49wV8yMpnqhXq/W5I=
+github.com/chremoas/services-common v1.3.0/go.mod h1:LQDKkCa7367dW2jcNfS3C4vHFP0UuxJ/krSXjx31kRo=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/circonus-labs/circonus-gometrics v0.0.0-20161109192337-d17a8420c36e/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
